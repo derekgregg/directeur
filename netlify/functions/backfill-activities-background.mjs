@@ -2,24 +2,19 @@ import { getSupabase } from './lib/supabase.mjs';
 import { getAthleteActivities, getActivity } from './lib/strava.mjs';
 import { generateRoast } from './lib/claude.mjs';
 
-export default async (req) => {
-  if (req.method !== 'POST') {
-    return new Response('Method not allowed', { status: 405 });
+export const handler = async (event) => {
+  if (event.httpMethod !== 'POST') {
+    return { statusCode: 405, body: 'Method not allowed' };
   }
 
-  const { athleteId } = await req.json();
+  const { athleteId } = JSON.parse(event.body);
   if (!athleteId) {
-    return new Response(JSON.stringify({ error: 'athleteId required' }), { status: 400 });
+    return { statusCode: 400, body: JSON.stringify({ error: 'athleteId required' }) };
   }
 
-  // Fire and forget
-  backfill(athleteId).catch((err) =>
-    console.error('Backfill error:', err)
-  );
+  await backfill(athleteId);
 
-  return new Response(JSON.stringify({ status: 'backfill started' }), {
-    headers: { 'Content-Type': 'application/json' },
-  });
+  return { statusCode: 200, body: JSON.stringify({ status: 'backfill complete' }) };
 };
 
 async function backfill(athleteId) {
