@@ -78,6 +78,30 @@ export async function getActivity(athleteId, activityId) {
   return res.json();
 }
 
+export async function getAthleteActivities(athleteId, after) {
+  const token = await refreshAccessToken(athleteId);
+  const activities = [];
+  let page = 1;
+
+  while (true) {
+    const params = new URLSearchParams({
+      after: String(after),
+      per_page: '50',
+      page: String(page),
+    });
+    const res = await fetch(`${STRAVA_API}/athlete/activities?${params}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) throw new Error(`Activities list failed: ${res.status}`);
+    const batch = await res.json();
+    if (!batch.length) break;
+    activities.push(...batch);
+    page++;
+  }
+
+  return activities;
+}
+
 export async function upsertAthlete(tokenData) {
   const db = getSupabase();
   const athlete = tokenData.athlete;

@@ -19,6 +19,14 @@ export default async (req) => {
   try {
     const tokenData = await exchangeToken(code);
     const athlete = await upsertAthlete(tokenData);
+
+    // Trigger backfill of last 30 days in background
+    fetch(`${process.env.SITE_URL}/api/backfill-activities`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ athleteId: athlete.id }),
+    }).catch((err) => console.error('Backfill trigger error:', err));
+
     return new Response(null, {
       status: 302,
       headers: {
