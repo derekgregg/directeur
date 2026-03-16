@@ -159,21 +159,40 @@ async function loadFeed() {
     const res = await fetch('/api/get-feed');
     const data = await res.json();
 
-    if (!data.activities?.length) {
-      feed.innerHTML = '<p class="text-muted">No activities yet. Connect a platform and go ride!</p>';
+    const pending = data.pending_uploads || [];
+    const activities = data.activities || [];
+
+    if (!activities.length && !pending.length) {
+      feed.innerHTML = '<p class="text-muted">No activities yet. <a href="/upload.html">Upload a file</a> or connect a platform and go ride!</p>';
       return;
     }
 
-    feed.innerHTML = data.activities.map(a => `
+    let html = '';
+
+    if (pending.length) {
+      html += pending.map(u => `
+        <div class="feed-item feed-pending">
+          <div class="feed-header">
+            <span class="step-spinner"></span>
+            <span class="feed-name">${u.activity_name || u.filename}</span>
+            <span class="text-muted">${u.status === 'pending' ? 'Queued' : 'Processing...'}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    html += activities.map(a => `
       <div class="feed-item">
         <div class="feed-header">
           <span class="feed-name">${a.name}</span>
           <span class="feed-date">${new Date(a.start_date).toLocaleDateString()}</span>
           ${Object.keys(a.platform_links || {}).map(p => `<span class="platform-badge badge-${p}">${p}</span>`).join(' ') || `<span class="platform-badge badge-${a.source_platform || 'strava'}">${a.source_platform || 'strava'}</span>`}
         </div>
-        ${a.roast ? `<div class="roast">${a.roast}</div>` : ''}
+        ${a.roast ? `<div class="roast">${a.roast}</div>` : '<p class="text-muted">Awaiting commentary...</p>'}
       </div>
     `).join('');
+
+    feed.innerHTML = html;
   } catch {
     feed.innerHTML = '<p class="text-muted">Failed to load feed.</p>';
   }

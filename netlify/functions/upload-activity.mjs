@@ -99,7 +99,7 @@ export default async (req) => {
   }
 
   // Dispatch background processing
-  fetch(`${process.env.SITE_URL}/.netlify/functions/parse-upload-background`, {
+  fetch(`${process.env.SITE_URL}/api/parse-upload-background`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ uploadId, userId }),

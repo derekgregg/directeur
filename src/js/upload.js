@@ -109,6 +109,7 @@ function setupUpload() {
 
     uploadBtn.disabled = true;
     uploadBtn.textContent = 'Uploading...';
+    showProgress('uploading');
 
     try {
       const buffer = await selectedFile.arrayBuffer();
@@ -145,7 +146,7 @@ function setupUpload() {
         return;
       }
 
-      showStatus('processing', 'Processing your activity...');
+      showProgress('uploaded');
       pollStatus(data.uploadId);
     } catch (err) {
       showStatus('error', 'Upload failed. Please try again.');
@@ -155,13 +156,42 @@ function setupUpload() {
   });
 }
 
+const STEPS = [
+  { key: 'uploading', label: 'Uploading file' },
+  { key: 'uploaded', label: 'File uploaded' },
+  { key: 'processing', label: 'Parsing activity data' },
+  { key: 'generating', label: 'Le Directeur is reviewing your effort' },
+  { key: 'complete', label: 'Commentary ready' },
+];
+
+function showProgress(currentStep) {
+  const el = document.getElementById('upload-status');
+  el.style.display = 'block';
+  el.className = 'upload-status-msg';
+
+  const currentIdx = STEPS.findIndex(s => s.key === currentStep);
+
+  el.innerHTML = `<div class="progress-steps">
+    ${STEPS.map((step, i) => {
+      let cls = 'step-pending';
+      let icon = `<span class="step-num">${i + 1}</span>`;
+      if (i < currentIdx) {
+        cls = 'step-done';
+        icon = '<span class="step-check">&#10003;</span>';
+      } else if (i === currentIdx) {
+        cls = 'step-active';
+        icon = '<span class="step-spinner"></span>';
+      }
+      return `<div class="progress-step ${cls}">${icon}<span class="step-label">${step.label}</span></div>`;
+    }).join('')}
+  </div>`;
+}
+
 function showStatus(type, message) {
   const el = document.getElementById('upload-status');
   el.style.display = 'block';
   el.className = `upload-status-msg ${type}`;
-  el.innerHTML = type === 'processing'
-    ? `<div class="loading">${message}</div>`
-    : type === 'error'
+  el.innerHTML = type === 'error'
     ? `<p style="color: var(--flame);">${message}</p>`
     : `<p style="color: var(--toxic);">${message}</p>`;
 }
@@ -169,6 +199,7 @@ function showStatus(type, message) {
 async function pollStatus(uploadId) {
   let attempts = 0;
   const maxAttempts = 30; // 60 seconds
+  let lastStatus = 'uploaded';
 
   const interval = setInterval(async () => {
     attempts++;
@@ -176,10 +207,20 @@ async function pollStatus(uploadId) {
       const res = await fetch(`/api/upload-status?id=${uploadId}`);
       const data = await res.json();
 
+      // Map backend status to progress steps
+      if (data.status === 'processing' && lastStatus === 'uploaded') {
+        showProgress('processing');
+        lastStatus = 'processing';
+      }
+      if (data.status === 'processing' && attempts > 3) {
+        showProgress('generating');
+        lastStatus = 'generating';
+      }
+
       if (data.status === 'complete') {
         clearInterval(interval);
-        showStatus('success', 'Le Directeur has reviewed your activity. Check the leaderboard!');
-        loadRecentUploads();
+        showProgress('complete');
+        setTimeout(() => loadRecentUploads(), 1500);
       } else if (data.status === 'error') {
         clearInterval(interval);
         showStatus('error', data.error || 'Processing failed.');

@@ -77,7 +77,7 @@ export default async (req) => {
     }
 
     // Dispatch to background function for processing
-    fetch(`${process.env.SITE_URL}/.netlify/functions/process-activity-background`, {
+    fetch(`${process.env.SITE_URL}/api/process-activity-background`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

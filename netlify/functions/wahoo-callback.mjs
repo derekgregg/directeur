@@ -62,7 +62,7 @@ export default async (req) => {
     await setupWebhook(accessToken);
 
     // Trigger backfill
-    fetch(`${process.env.SITE_URL}/.netlify/functions/backfill-activities-background`, {
+    fetch(`${process.env.SITE_URL}/api/backfill-activities-background`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId, platform: 'wahoo' }),

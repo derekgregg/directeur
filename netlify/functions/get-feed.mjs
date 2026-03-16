@@ -2,6 +2,7 @@ import { getSupabase } from './lib/supabase.mjs';
 import { getUserIdFromRequest } from './lib/auth.mjs';
 
 // Personal activity feed — shows the logged-in user's own activities
+// Includes completed activities and pending uploads
 export default async (req) => {
   const userId = getUserIdFromRequest(req);
   if (!userId) {
@@ -17,19 +18,27 @@ export default async (req) => {
 
   const db = getSupabase();
 
-  const { data, error } = await db
+  // Get completed activities
+  const { data: activities } = await db
     .from('activities')
     .select('*')
     .eq('user_id', userId)
-    .not('roast', 'is', null)
     .order(sortCol, { ascending: false })
     .limit(limit);
 
-  if (error) {
-    return new Response(JSON.stringify({ error: 'Query failed' }), { status: 500 });
-  }
+  // Get pending/processing uploads
+  const { data: uploads } = await db
+    .from('uploads')
+    .select('*')
+    .eq('user_id', userId)
+    .in('status', ['pending', 'processing'])
+    .order('created_at', { ascending: false })
+    .limit(10);
 
-  return new Response(JSON.stringify({ activities: data || [] }), {
+  return new Response(JSON.stringify({
+    activities: activities || [],
+    pending_uploads: uploads || [],
+  }), {
     headers: { 'Content-Type': 'application/json' },
   });
 };
