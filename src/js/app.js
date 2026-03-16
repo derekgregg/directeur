@@ -183,3 +183,61 @@ filterSport.addEventListener('change', loadLeaderboard);
 sortBy.addEventListener('change', loadLeaderboard);
 
 checkAuth().then(loadLeaderboard);
+
+// Bug report modal
+const bugModal = document.getElementById('bug-modal');
+const bugLink = document.getElementById('report-bug-link');
+const bugSubmit = document.getElementById('bug-submit');
+const bugCancel = document.getElementById('bug-cancel');
+const bugStatus = document.getElementById('bug-status');
+
+if (bugLink) {
+  bugLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    bugModal.classList.remove('hidden');
+  });
+}
+
+if (bugCancel) {
+  bugCancel.addEventListener('click', () => bugModal.classList.add('hidden'));
+}
+
+if (bugModal) {
+  bugModal.addEventListener('click', (e) => {
+    if (e.target === bugModal) bugModal.classList.add('hidden');
+  });
+}
+
+if (bugSubmit) {
+  bugSubmit.addEventListener('click', async () => {
+    const title = document.getElementById('bug-title').value.trim();
+    if (!title) {
+      bugStatus.innerHTML = '<p style="color: var(--flame);">Please describe the issue.</p>';
+      return;
+    }
+    bugSubmit.disabled = true;
+    bugSubmit.textContent = 'Submitting...';
+    try {
+      const res = await fetch('/api/report-bug', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title,
+          description: document.getElementById('bug-description').value.trim(),
+          page: window.location.pathname,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        bugStatus.innerHTML = `<p style="color: var(--toxic);">Thanks! Issue #${data.issueNumber} created.</p>`;
+        setTimeout(() => bugModal.classList.add('hidden'), 2000);
+      } else {
+        bugStatus.innerHTML = `<p style="color: var(--flame);">${data.error || 'Failed to submit.'}</p>`;
+      }
+    } catch {
+      bugStatus.innerHTML = '<p style="color: var(--flame);">Failed to submit. Try again.</p>';
+    }
+    bugSubmit.disabled = false;
+    bugSubmit.textContent = 'Submit';
+  });
+}

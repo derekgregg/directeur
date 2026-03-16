@@ -58,7 +58,28 @@
         </a>
       </div>
       <a href="/privacy.html" class="footer-link">Privacy Policy</a>
+      <span class="footer-sep">·</span>
+      <a href="#" class="footer-link" id="report-bug-link">Report a Bug</a>
     </footer>
+
+    <div id="bug-modal" class="modal hidden">
+      <div class="modal-content">
+        <h3>Report a Bug</h3>
+        <div class="settings-field">
+          <label for="bug-title">What went wrong?</label>
+          <input type="text" id="bug-title" placeholder="e.g. Upload fails on large files">
+        </div>
+        <div class="settings-field">
+          <label for="bug-description">Details <span class="text-muted">(optional)</span></label>
+          <textarea id="bug-description" rows="3" placeholder="Steps to reproduce, what you expected, etc."></textarea>
+        </div>
+        <div class="modal-actions">
+          <button id="bug-submit" class="connect-btn">Submit</button>
+          <button id="bug-cancel" class="connect-btn" style="background: var(--surface); border: 1px solid var(--border);">Cancel</button>
+        </div>
+        <div id="bug-status"></div>
+      </div>
+    </div>
   </div>
 
   <script type="module" src="/js/app.js"></script>
