@@ -41,6 +41,10 @@ async function loadSettings() {
           <input type="number" id="weight-input" value="${user.weight || ''}" min="30" max="200" step="0.1" placeholder="e.g. 75">
         </div>
         <div class="settings-field">
+          <label for="ftp-input">FTP (watts) <span class="text-muted">— Le Directeur will judge your efforts against this</span></label>
+          <input type="number" id="ftp-input" value="${user.ftp || ''}" min="50" max="500" step="1" placeholder="e.g. 250">
+        </div>
+        <div class="settings-field">
           <label class="checkbox-label">
             <input type="checkbox" id="share-toggle" ${user.share_with_group ? 'checked' : ''}>
             <span>Share my activities with the group leaderboard</span>
@@ -114,6 +118,10 @@ async function saveProfile() {
   const w = parseFloat(document.getElementById('weight-input').value);
   if (w > 0) body.weight = w;
   else body.weight = 0;
+
+  const ftp = parseInt(document.getElementById('ftp-input').value);
+  if (ftp > 0) body.ftp = ftp;
+  else body.ftp = 0;
 
   try {
     await fetch('/api/user-preferences', {

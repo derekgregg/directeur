@@ -69,12 +69,24 @@ function buildPrompt(activity, athlete) {
   const timeDiff = activity.elapsed_time - activity.moving_time;
   if (timeDiff > 60) stats.push(`Time spent stopped: ${formatDuration(timeDiff)}`);
 
+  // Athlete FTP context
+  if (activity.athlete_ftp) {
+    stats.push(`Athlete FTP: ${activity.athlete_ftp}W`);
+    if (activity.athlete_weight) {
+      const ftpWkg = (activity.athlete_ftp / activity.athlete_weight).toFixed(2);
+      stats.push(`FTP W/kg: ${ftpWkg}`);
+    }
+    if (activity.average_watts) {
+      const intensity = ((activity.average_watts / activity.athlete_ftp) * 100).toFixed(0);
+      stats.push(`Intensity (avg watts / FTP): ${intensity}%`);
+    }
+  }
+
   // Determine power category if watts data is available
   let powerContext = '';
-  if (activity.average_watts && activity.athlete_weight) {
-    const wkg = (activity.average_watts / activity.athlete_weight).toFixed(2);
-    stats.push(`W/kg (avg): ${wkg}`);
-    powerContext = `\nThe athlete's average power-to-weight is ${wkg} W/kg. For reference, here are male cycling categories by FTP W/kg:
+  if (activity.athlete_ftp && activity.athlete_weight) {
+    const ftpWkg = (activity.athlete_ftp / activity.athlete_weight).toFixed(2);
+    powerContext = `\nThe athlete's FTP is ${activity.athlete_ftp}W (${ftpWkg} W/kg). For reference, here are cycling categories by FTP W/kg:
 - World Class (intl. pro): 5.78–6.40
 - Exceptional (domestic pro): 5.15–5.69
 - Excellent (Cat 1): 4.80–5.07
