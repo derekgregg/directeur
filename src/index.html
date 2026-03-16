@@ -20,7 +20,7 @@
       <a href="/settings.html" class="nav-link">Settings</a>
     </nav>
 
-    <div class="controls">
+    <div id="controls" class="controls hidden">
       <select id="filter-user">
         <option value="">All Athletes</option>
       </select>
@@ -40,20 +40,19 @@
         <option value="moving_time">Duration</option>
         <option value="elevation_gain">Elevation</option>
       </select>
-      <a href="/api/google-auth" id="login-btn" class="connect-btn google-btn">Sign in with Google</a>
-      <div id="connect-buttons" class="connect-buttons hidden">
-        <a href="/api/strava-auth" class="connect-btn strava-btn">Connect Strava</a>
-        <a href="/api/wahoo-auth" class="connect-btn wahoo-btn">Connect Wahoo</a>
-        <a href="/api/garmin-auth" class="connect-btn garmin-btn">Connect Garmin</a>
-      </div>
     </div>
 
     <div id="leaderboard">
       <div class="loading">Loading commentary...</div>
     </div>
 
+    <div id="logged-out-cta" class="empty-state hidden">
+      <p>Sign in to upload activities and get brutally honest commentary from Le Directeur.</p>
+      <a href="/api/google-auth" class="connect-btn google-btn" style="margin-top: 16px;">Sign in with Google</a>
+    </div>
+
     <footer>
-      <div class="footer-logos">
+      <div id="strava-logo" class="footer-logos hidden">
         <a href="https://www.strava.com" target="_blank" rel="noopener">
           <img src="/images/api_logo_pwrdBy_strava_horiz_white.svg" alt="Powered by Strava">
         </a>

@@ -4,7 +4,12 @@ const filterSport = document.getElementById('filter-sport');
 const sortBy = document.getElementById('sort-by');
 const userNav = document.getElementById('user-nav');
 const userGreeting = document.getElementById('user-greeting');
-const connectButtons = document.getElementById('connect-buttons');
+const controls = document.getElementById('controls');
+const loggedOutCta = document.getElementById('logged-out-cta');
+const stravaLogo = document.getElementById('strava-logo');
+
+let isLoggedIn = false;
+let hasStrava = false;
 
 function formatDistance(meters) {
   if (!meters || meters === 0) return '--';
@@ -41,8 +46,6 @@ function platformBadges(activity) {
   const classes = { strava: 'badge-strava', wahoo: 'badge-wahoo', garmin: 'badge-garmin', upload: 'badge-upload' };
 
   const platforms = Object.keys(links);
-
-  // Fallback for legacy data without platform_links
   if (!platforms.length && activity.source_platform) {
     platforms.push(activity.source_platform);
   }
@@ -66,7 +69,6 @@ function activityLinks(activity) {
     parts.push(`<span class="view-on-wahoo">Recorded with Wahoo</span>`);
   }
 
-  // Legacy fallback
   if (!parts.length && activity.source_platform === 'strava') {
     const id = activity.source_activity_id || activity.id;
     parts.push(`<a href="https://www.strava.com/activities/${id}" target="_blank" rel="noopener" class="view-on-strava">View on Strava</a>`);
@@ -76,7 +78,6 @@ function activityLinks(activity) {
 }
 
 function renderCard(a) {
-  // Support both new (users) and legacy (athletes) schema
   const user = a.users || a.athletes;
   const displayName = user?.display_name || `${user?.firstname || '?'} ${user?.lastname || ''}`;
   const profilePic = user?.profile_pic || '';
@@ -111,33 +112,20 @@ function renderCard(a) {
 }
 
 async function checkAuth() {
-  const loginBtn = document.getElementById('login-btn');
   try {
     const res = await fetch('/api/get-user');
     const data = await res.json();
     if (data.user) {
-      // Logged in — show nav, hide login button, show platform connect buttons
+      isLoggedIn = true;
       userNav.classList.remove('hidden');
       userGreeting.textContent = data.user.display_name;
-      if (loginBtn) loginBtn.classList.add('hidden');
-      connectButtons.classList.remove('hidden');
 
-      // Hide already-connected platforms
       if (data.connections) {
-        const connected = data.connections.map(c => c.platform);
-        for (const p of ['strava', 'wahoo', 'garmin']) {
-          if (connected.includes(p)) {
-            const btn = document.querySelector(`.${p}-btn`);
-            if (btn) btn.classList.add('hidden');
-          }
-        }
-        // Hide container if all fitness platforms connected
-        const fitnessPlatforms = connected.filter(p => ['strava', 'wahoo', 'garmin'].includes(p));
-        if (fitnessPlatforms.length >= 3) connectButtons.classList.add('hidden');
+        hasStrava = data.connections.some(c => c.platform === 'strava');
       }
     }
   } catch {
-    // Not logged in — that's fine
+    // Not logged in
   }
 }
 
@@ -165,8 +153,22 @@ async function loadLeaderboard() {
     }
 
     if (!data.activities?.length) {
-      leaderboard.innerHTML = '<div class="empty-state"><p>No commentary yet. Connect a platform and go for a ride (or a gentle stroll — we judge those too).</p></div>';
+      leaderboard.innerHTML = '';
+      if (!isLoggedIn) {
+        loggedOutCta.classList.remove('hidden');
+      } else {
+        leaderboard.innerHTML = `<div class="empty-state">
+          <p>No commentary yet.</p>
+          <p style="margin-top: 8px;"><a href="/upload.html">Upload an activity</a> or <a href="/settings.html">connect a platform</a> to get started.</p>
+        </div>`;
+      }
       return;
+    }
+
+    // Show filters and Strava logo when there's content
+    controls.classList.remove('hidden');
+    if (hasStrava || data.activities.some(a => a.platform_links?.strava || a.source_platform === 'strava')) {
+      stravaLogo.classList.remove('hidden');
     }
 
     leaderboard.innerHTML = data.activities.map(renderCard).join('');
@@ -180,5 +182,4 @@ filterUser.addEventListener('change', loadLeaderboard);
 filterSport.addEventListener('change', loadLeaderboard);
 sortBy.addEventListener('change', loadLeaderboard);
 
-checkAuth();
-loadLeaderboard();
+checkAuth().then(loadLeaderboard);
