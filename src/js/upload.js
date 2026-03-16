@@ -99,7 +99,7 @@ function setupUpload() {
     selectedFile = file;
     const sizeMB = (file.size / 1024 / 1024).toFixed(2);
     fileInfo.innerHTML = `<span class="platform-badge badge-${ext === 'fit' ? 'garmin' : ext === 'tcx' ? 'wahoo' : 'strava'}">.${ext.toUpperCase()}</span> ${file.name} (${sizeMB} MB)`;
-    nameInput.value = file.name.replace(/\.\w+$/, '').replace(/[-_]/g, ' ');
+    nameInput.value = '';
     fields.style.display = 'block';
     dropZone.style.display = 'none';
   }

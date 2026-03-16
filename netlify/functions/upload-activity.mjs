@@ -89,7 +89,7 @@ export default async (req) => {
     filename,
     file_format: ext,
     file_size: fileBuffer.length,
-    activity_name: name || filename.replace(/\.\w+$/, ''),
+    activity_name: name || null,
     status: 'pending',
   });
 

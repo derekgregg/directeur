@@ -40,8 +40,8 @@ export const handler = async (event) => {
     // Parse the file
     const activity = await parseActivityFile(buffer, upload.filename);
 
-    // Use user-provided name if available, fall back to parsed name or filename
-    activity.name = upload.activity_name || activity.name || upload.filename.replace(/\.\w+$/, '');
+    // Use user-provided name if available, fall back to parsed name, or generic
+    activity.name = upload.activity_name || activity.name || (activity.sport_type || 'Activity');
 
     // Get user
     const { data: user } = await db
