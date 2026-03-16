@@ -2,7 +2,7 @@ import { createHmac } from 'crypto';
 import { getSupabase } from './supabase.mjs';
 
 const SECRET = () => process.env.JWT_SECRET || process.env.ADMIN_SECRET;
-const COOKIE_NAME = 'flame_session';
+const COOKIE_NAME = 'directeur_session';
 const MAX_AGE = 30 * 24 * 60 * 60; // 30 days
 
 function sign(payload) {

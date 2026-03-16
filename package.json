@@ -1,7 +1,7 @@
 {
-  "name": "strava-flame",
-  "version": "1.0.0",
-  "description": "Toxic feedback bot for Strava activities",
+  "name": "le-directeur",
+  "version": "2.0.0",
+  "description": "Your brutally honest directeur sportif — AI-powered cycling commentary",
   "type": "module",
   "scripts": {
     "dev": "netlify dev",

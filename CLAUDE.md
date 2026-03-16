@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Flame is a community web app that generates AI-powered humorous commentary on group Strava activities. Athletes connect via OAuth, activities arrive via webhooks, Claude generates roasts, and everything is displayed on a shared leaderboard.
+Le Directeur is a community web app that generates AI-powered brutally honest cycling commentary on group activities. Athletes connect via OAuth (Strava, Wahoo, Garmin), activities arrive via webhooks, Claude generates roasts, and everything is displayed on a shared leaderboard and personal feed.
 
 ## Tech Stack
 
@@ -35,7 +35,7 @@ All changes must comply with Strava's API Agreement and Brand Guidelines. Violat
 
 ### Branding
 
-- **Never use "Strava" in the app name.** The app is called "Flame", not "Strava Flame".
+- **Never use "Strava" in the app name.** The app is called "Le Directeur", not "Strava Directeur".
 - Display **"Powered by Strava"** attribution using the official unmodified logo (in `src/images/`).
 - All activity cards must include a **"View on Strava"** link (`https://www.strava.com/activities/{id}`) in Strava orange (#FC5200), bold or underlined.
 - Never imply Strava endorses, sponsors, or developed this app.
