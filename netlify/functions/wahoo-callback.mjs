@@ -1,6 +1,6 @@
 import { getSupabase } from './lib/supabase.mjs';
 import { exchangeToken, getUser, setupWebhook } from './lib/wahoo.mjs';
-import { findOrCreateUser, createSessionToken, getSessionCookie } from './lib/auth.mjs';
+import { findOrCreateUser, createSessionToken, getSessionCookie, getUserIdFromRequest } from './lib/auth.mjs';
 
 export default async (req) => {
   const url = new URL(req.url);
@@ -69,11 +69,14 @@ export default async (req) => {
     }).catch((err) => console.error('Wahoo backfill trigger error:', err));
 
     const token = createSessionToken(userId);
+    const isExistingUser = getUserIdFromRequest(req) != null;
 
     return new Response(null, {
       status: 302,
       headers: {
-        Location: `${process.env.SITE_URL}/callback.html?success=true&name=${encodeURIComponent(user.first || 'Wahoo User')}&user_id=${userId}&platform=wahoo`,
+        Location: isExistingUser
+          ? `${process.env.SITE_URL}/settings.html?connected=wahoo`
+          : `${process.env.SITE_URL}/callback.html?success=true&name=${encodeURIComponent(user.first || 'Wahoo User')}&user_id=${userId}&platform=wahoo`,
         'Set-Cookie': getSessionCookie(token),
       },
     });

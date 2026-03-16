@@ -1,6 +1,6 @@
 import { getSupabase } from './lib/supabase.mjs';
 import { exchangeToken } from './lib/strava.mjs';
-import { findOrCreateUser, createSessionToken, getSessionCookie } from './lib/auth.mjs';
+import { findOrCreateUser, createSessionToken, getSessionCookie, getUserIdFromRequest } from './lib/auth.mjs';
 
 export default async (req) => {
   const url = new URL(req.url);
@@ -77,11 +77,14 @@ export default async (req) => {
     }).catch((err) => console.error('Backfill trigger error:', err));
 
     const token = createSessionToken(userId);
+    const isExistingUser = getUserIdFromRequest(req) != null;
 
     return new Response(null, {
       status: 302,
       headers: {
-        Location: `${process.env.SITE_URL}/callback.html?success=true&name=${encodeURIComponent(athlete.firstname)}&user_id=${userId}&platform=strava`,
+        Location: isExistingUser
+          ? `${process.env.SITE_URL}/settings.html?connected=strava`
+          : `${process.env.SITE_URL}/callback.html?success=true&name=${encodeURIComponent(athlete.firstname)}&user_id=${userId}&platform=strava`,
         'Set-Cookie': getSessionCookie(token),
       },
     });
