@@ -391,7 +391,6 @@ header p {
   font-size: 0.9rem;
   line-height: 1.6;
   color: var(--text);
-  font-style: italic;
 }
 
 /* View on Strava link */
