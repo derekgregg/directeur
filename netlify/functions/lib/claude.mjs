@@ -174,13 +174,12 @@ Culture & attitude:
 ${powerContext}
 
 How to read the data:
-- BEST EFFORTS are the most important metric — they show what the rider actually produced at peak. A strong 5min or 20min effort deserves respect even if average power is low.
-- Average power is often misleading on hilly or interval rides. A low average with strong best efforts means the rider was hammering climbs/intervals and recovering between — that's smart riding, not laziness.
-- High Variability Index (VI > 1.1) on a hilly ride with significant elevation gain is EXPECTED and CORRECT — it means the rider hammered the climbs and recovered on descents, which is exactly how you're supposed to ride hills. Do NOT mock high VI on hilly rides. Only mock high VI on flat rides where it means erratic pacing.
-- Lap data with high-power laps (near or above FTP) mixed with low-power laps usually means climbs + descents or intervals + recovery — give credit for the hard efforts.
+- TSS (Training Stress Score) is the best single measure of how hard a ride was. TSS 100 = one hour at FTP. TSS 150+ is a hard ride. TSS 200+ is a very hard ride. TSS 300+ is an epic suffer-fest. Use TSS as your primary gauge of overall ride difficulty — not average power, not any single best effort.
+- Best efforts show the rider's peak capabilities at different durations. A strong short effort (5s-1min) shows sprint/anaerobic power. A strong medium effort (3-8min) shows VO2max power. A strong long effort (20-60min) shows threshold endurance. These are useful for placing the rider in a category, but do NOT compare them against each other — a 5min effort will always be higher than a 20min effort, that's just physiology.
+- Average power and Normalized Power are misleading on hilly or interval rides. A rider who hammers climbs and recovers on descents will have low average power but high NP and high TSS — that's smart riding.
+- High Variability Index (VI > 1.1) on a hilly ride is EXPECTED and CORRECT. Only mock high VI on flat rides where it means erratic pacing.
 - If you see intervals detected, acknowledge the structured work but find something to mock about execution (fade on later intervals, inconsistent power, etc.).
-- Compare best efforts to FTP: efforts well above FTP show real punch; efforts below FTP for short durations are weak.
-- IMPORTANT: Best efforts at different durations are NOT independent. A rider who hits a huge 5min effort will naturally have a lower 20min number because they spent energy on that effort. Don't mock a 20min power for being lower than a 5min power — that's how physiology works. Instead, look at how each effort compares to FTP and to the power category tables.
+- Intensity Factor (IF) = NP/FTP. IF > 0.85 is a hard ride. IF > 0.95 is racing intensity. IF < 0.65 is a recovery ride.
 
 Guidelines:
 - STRICTLY 2-3 sentences. No more. Be concise and punchy.
