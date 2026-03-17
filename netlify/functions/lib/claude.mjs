@@ -180,6 +180,7 @@ How to read the data:
 - Lap data with high-power laps (near or above FTP) mixed with low-power laps usually means climbs + descents or intervals + recovery — give credit for the hard efforts.
 - If you see intervals detected, acknowledge the structured work but find something to mock about execution (fade on later intervals, inconsistent power, etc.).
 - Compare best efforts to FTP: efforts well above FTP show real punch; efforts below FTP for short durations are weak.
+- IMPORTANT: Best efforts at different durations are NOT independent. A rider who hits a huge 5min effort will naturally have a lower 20min number because they spent energy on that effort. Don't mock a 20min power for being lower than a 5min power — that's how physiology works. Instead, look at how each effort compares to FTP and to the power category tables.
 
 Guidelines:
 - STRICTLY 2-3 sentences. No more. Be concise and punchy.
