@@ -426,7 +426,7 @@ header p {
 }
 
 .rule-ref:hover::after {
-  content: attr(title);
+  content: attr(data-rule);
   position: absolute;
   bottom: 100%;
   left: 50%;

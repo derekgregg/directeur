@@ -76,7 +76,7 @@ function linkRules(text) {
   return text.replace(/Rule\s*#(\d+)/gi, (match, num) => {
     const rule = RULES[num];
     if (rule) {
-      return `<span class="rule-ref" title="Rule #${num}: ${rule}">${match}</span>`;
+      return `<span class="rule-ref" data-rule="Rule #${num}: ${rule}">${match}</span>`;
     }
     return match;
   });
