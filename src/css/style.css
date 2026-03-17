@@ -91,6 +91,21 @@ header p {
 
 .nav-link:hover { color: var(--accent); }
 
+.login-link {
+  color: var(--accent);
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border: 1px solid var(--border);
+  padding: 6px 16px;
+  border-radius: 4px;
+}
+
+.login-link:hover {
+  border-color: var(--accent);
+  text-decoration: none;
+}
+
 /* Controls */
 .controls {
   display: flex;
