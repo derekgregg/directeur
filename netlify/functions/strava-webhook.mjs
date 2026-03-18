@@ -76,16 +76,20 @@ export default async (req) => {
       return new Response('OK', { status: 200 });
     }
 
-    // Dispatch to background function for processing
-    fetch(`${process.env.SITE_URL}/api/process-activity-background`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        athleteId: event.owner_id,
-        activityId: event.object_id,
-        platform: 'strava',
-      }),
-    }).catch((err) => console.error('Background dispatch error:', err));
+    // Dispatch to background function for processing — must await so Netlify doesn't kill the process
+    try {
+      await fetch(`${process.env.SITE_URL}/api/process-activity-background`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          athleteId: event.owner_id,
+          activityId: event.object_id,
+          platform: 'strava',
+        }),
+      });
+    } catch (err) {
+      console.error('Background dispatch error:', err);
+    }
 
     return new Response('OK', { status: 200 });
   }
