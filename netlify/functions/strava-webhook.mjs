@@ -77,8 +77,10 @@ export default async (req) => {
     }
 
     // Dispatch to background function for processing — must await so Netlify doesn't kill the process
+    const dispatchUrl = `${process.env.SITE_URL}/api/process-activity-background`;
+    console.log(`Dispatching activity ${event.object_id} for athlete ${event.owner_id} to ${dispatchUrl}`);
     try {
-      await fetch(`${process.env.SITE_URL}/api/process-activity-background`, {
+      const dispatchRes = await fetch(dispatchUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -87,6 +89,7 @@ export default async (req) => {
           platform: 'strava',
         }),
       });
+      console.log(`Background dispatch response: ${dispatchRes.status}`);
     } catch (err) {
       console.error('Background dispatch error:', err);
     }

@@ -69,12 +69,16 @@ export default async (req) => {
       is_tracked: true,
     });
 
-    // Trigger backfill
-    fetch(`${process.env.SITE_URL}/api/backfill-activities-background`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId, athleteId: athlete.id, platform: 'strava' }),
-    }).catch((err) => console.error('Backfill trigger error:', err));
+    // Trigger backfill — must await so Netlify doesn't kill the process
+    try {
+      await fetch(`${process.env.SITE_URL}/api/backfill-activities-background`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, athleteId: athlete.id, platform: 'strava' }),
+      });
+    } catch (err) {
+      console.error('Backfill trigger error:', err);
+    }
 
     const token = createSessionToken(userId);
     const isExistingUser = getUserIdFromRequest(req) != null;
