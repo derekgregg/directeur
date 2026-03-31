@@ -8,12 +8,14 @@ Upload a .FIT file, connect Strava, Wahoo, or Garmin — Le Directeur analyzes y
 
 ## Features
 
-- **Multi-platform:** Strava, Wahoo, Garmin, Google sign-in, direct file uploads (.FIT, .GPX, .TCX)
+- **Multi-platform:** Strava, Google sign-in, direct file uploads (.FIT, .GPX, .TCX). Wahoo and Garmin support built but pending API access approval.
 - **Power analysis:** Best efforts (5s to 90min), Normalized Power, Variability Index, TSS, interval detection
-- **AI commentary:** Claude generates context-aware commentary using your FTP, weight, height, best efforts, lap splits, and intervals
+- **Ride analysis:** Climb detection, ride segmentation, W'bal tracking, heart rate zone analysis, pacing analysis
+- **AI commentary:** Claude generates context-aware commentary using your FTP, weight, height, best efforts, lap splits, intervals, and ride analysis
 - **Route maps:** GPS tracks rendered on dark map tiles via Leaflet
 - **Velominati Rules:** Commentary references The Rules with interactive tooltips showing full rule text
 - **Activity deduplication:** Automatically merges the same ride from multiple platforms
+- **Strava sync:** Webhook-driven activity ingestion plus manual sync and admin backfill
 - **Bug reports & feature requests:** In-app feedback creates GitHub issues automatically
 - **Privacy-first:** Opt-in group sharing, 7-day Strava retention, GDPR/CCPA compliant
 
@@ -103,6 +105,7 @@ src/                              Frontend (Vite)
   index.html                      Leaderboard
   upload.html                     File upload page
   settings.html                   User settings + feed
+  admin.html                      Admin dashboard
   callback.html                   OAuth callback
   privacy.html                    Privacy policy
   css/style.css                   Dark green + gold theme
@@ -110,6 +113,7 @@ src/                              Frontend (Vite)
     app.js                        Leaderboard + maps
     upload.js                     File upload + progress
     settings.js                   Profile + connections
+    admin.js                      Admin tools
     auth.js                       OAuth callback handler
 
 netlify/functions/                Backend
@@ -122,6 +126,7 @@ netlify/functions/                Backend
     garmin.mjs                    Garmin API client
     polyline.mjs                  Polyline encoder/decoder
     power-analysis.mjs            Best efforts, NP, intervals
+    ride-analysis.mjs             Climb detection, segmentation, W'bal, HR/pacing
     strava.mjs                    Strava API client
     supabase.mjs                  Database client
     wahoo.mjs                     Wahoo API client
@@ -133,10 +138,18 @@ netlify/functions/                Backend
   *-webhook.mjs                   Platform webhooks
   upload-activity.mjs             File upload intake
   parse-upload-background.mjs     Async file processing
+  process-activity-background.mjs Strava activity processing
+  sync-activities.mjs             Manual Strava sync
+  admin-sync.mjs                  Admin backfill all athletes
+  reanalyze-activities-background.mjs  Re-run analysis on existing activities
+  purge-old-activities.mjs        Strava 7-day retention cleanup
   get-leaderboard.mjs             Public leaderboard API
   get-feed.mjs                    Personal feed API
   get-user.mjs                    Current user API
+  user-preferences.mjs            User settings API
+  athlete-preferences.mjs         Athlete visibility preferences
   report-bug.mjs                  GitHub issue creation
+  logout.mjs                      Session logout
 
 supabase/
   schema.sql                      Full database schema
