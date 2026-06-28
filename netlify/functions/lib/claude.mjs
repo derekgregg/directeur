@@ -39,16 +39,18 @@ function buildPrompt(activity, athlete) {
   if (activity.distance > 0) stats.push(`Distance: ${formatDistance(activity.distance)}`);
   stats.push(`Moving time: ${formatDuration(activity.moving_time)}`);
   stats.push(`Elapsed time: ${formatDuration(activity.elapsed_time)}`);
-  if (activity.total_elevation_gain > 0) stats.push(`Elevation gain: ${fmt(activity.total_elevation_gain)} m`);
+  const elevationGain = activity.total_elevation_gain ?? activity.elevation_gain;
+  if (elevationGain > 0) stats.push(`Elevation gain: ${fmt(elevationGain)} m`);
   if (activity.average_speed > 0) stats.push(`Average speed: ${formatSpeed(activity.average_speed)}`);
   if (activity.max_speed > 0) stats.push(`Max speed: ${formatSpeed(activity.max_speed)}`);
-  if (activity.average_watts) stats.push(`Average watts: ${fmt(activity.average_watts)} W`);
   if (activity.max_watts) stats.push(`Max watts: ${fmt(activity.max_watts)} W`);
-  if (activity.suffer_score) stats.push(`Suffer score: ${fmt(activity.suffer_score)}`);
   if (activity.normalized_power) stats.push(`Normalized power: ${fmt(activity.normalized_power)} W`);
+  if (activity.suffer_score) stats.push(`Suffer score: ${fmt(activity.suffer_score)}`);
   if (activity.avg_cadence) stats.push(`Average cadence: ${activity.avg_cadence} rpm`);
-  if (activity.average_heartrate) stats.push(`Average HR: ${activity.average_heartrate} bpm`);
-  if (activity.max_heartrate) stats.push(`Max HR: ${activity.max_heartrate} bpm`);
+  const avgHr = activity.average_heartrate ?? activity.avg_heart_rate;
+  const maxHr = activity.max_heartrate ?? activity.max_heart_rate;
+  if (avgHr) stats.push(`Average HR: ${avgHr} bpm`);
+  if (maxHr) stats.push(`Max HR: ${maxHr} bpm`);
   if (activity.calories) stats.push(`Calories: ${fmt(activity.calories)}`);
 
   // Best power efforts
@@ -191,9 +193,9 @@ function buildPrompt(activity, athlete) {
       const ftpWkg = (activity.athlete_ftp / activity.athlete_weight).toFixed(2);
       stats.push(`FTP W/kg: ${ftpWkg}`);
     }
-    if (activity.average_watts) {
-      const intensity = ((activity.average_watts / activity.athlete_ftp) * 100).toFixed(0);
-      stats.push(`Intensity (avg watts / FTP): ${intensity}%`);
+    if (activity.normalized_power) {
+      const if_ = (activity.normalized_power / activity.athlete_ftp).toFixed(2);
+      stats.push(`Intensity Factor (NP / FTP): ${if_}`);
     }
   }
 
@@ -211,8 +213,8 @@ function buildPrompt(activity, athlete) {
 - Fair (Cat 5): 2.58–2.84
 - Untrained: 1.86–2.49
 Use this to place the athlete in a category and judge (or grudgingly respect) them accordingly.`;
-  } else if (activity.average_watts) {
-    powerContext = `\nFor reference, a median male cyclist averages ~286W for 20min efforts. Use this to calibrate your mockery.`;
+  } else if (activity.normalized_power) {
+    powerContext = `\nFor reference, a median male cyclist holds ~250W normalized for an hour. Use this to calibrate your mockery.`;
   }
 
   return `You are Le Directeur — a brutally honest directeur sportif who channels the spirit of the Velominati. You bark orders from the team car and judge every ride with savage, hilarious commentary. Be creative, specific to the stats, and merciless but fair. Reference actual numbers.
@@ -255,7 +257,7 @@ ${powerContext}
 How to read the data:
 - TSS (Training Stress Score) is the best single measure of how hard a ride was. TSS 100 = one hour at FTP. TSS 150+ is a hard ride. TSS 200+ is a very hard ride. TSS 300+ is an epic suffer-fest. Use TSS as your primary gauge of overall ride difficulty — not average power, not any single best effort.
 - Best efforts show the rider's peak capabilities at different durations. A strong short effort (5s-1min) shows sprint/anaerobic power. A strong medium effort (3-8min) shows VO2max power. A strong long effort (20-60min) shows threshold endurance. These are useful for placing the rider in a category, but do NOT compare them against each other — a 5min effort will always be higher than a 20min effort, that's just physiology.
-- Average power and Normalized Power are misleading on hilly or interval rides. A rider who hammers climbs and recovers on descents will have low average power but high NP and high TSS — that's smart riding.
+- Normalized Power (NP) is the primary effort metric — it weights hard surges more heavily than easy spinning, so it reflects actual physiological cost. Judge how hard the rider worked by NP, Intensity Factor, and TSS — not by max watts or any single best effort.
 - High Variability Index (VI > 1.1) on a hilly ride is EXPECTED and CORRECT. Only mock high VI on flat rides where it means erratic pacing.
 - If you see intervals detected, acknowledge the structured work but find something to mock about execution (fade on later intervals, inconsistent power, etc.). Fatigue % shows how power changed vs the first interval — negative means fading.
 - Intensity Factor (IF) = NP/FTP. IF > 0.85 is a hard ride. IF > 0.95 is racing intensity. IF < 0.65 is a recovery ride.
